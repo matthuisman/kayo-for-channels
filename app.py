@@ -11,7 +11,6 @@ CHUNKSIZE = 64 * 1024
 PLAYLIST_URL = 'playlist.m3u'
 EPG_URL = 'epg.xml'
 PLAY_URL = 'play'
-REFRESH_URL = 'refresh'
 STATUS_URL = ''
 EPG_SOURCE = 'https://i.mjh.nz/Kayo/epg.xml'
 
