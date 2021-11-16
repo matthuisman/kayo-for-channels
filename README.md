@@ -13,6 +13,7 @@ Running the container is easy. Fire up the container as usual. You can set which
     docker run -d --restart unless-stopped --env "USERNAME=MY_EMAIL" --env "PASSWORD=MY_PASSWORD" --name kayo-for-channels -p 8184:80 matthuisman/kayo-for-channels
 
 Replace `MY_EMAIL` and `MY_PASSWORD` with your Kayo login details
+If your password contains any special characters, you may need to escape them with a \ before the characeter
 
 You can retrieve the playlist & EPG URL via the status page.
 
