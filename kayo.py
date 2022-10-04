@@ -17,14 +17,12 @@ AVAILABLE_CDNS = [CDN_AKAMAI, CDN_CLOUDFRONT, CDN_AUTO]
 SUPPORTED_FORMATS = [FORMAT_HLS_TS, FORMAT_HLS_TS_SSAI, FORMAT_HLS_FMP4, FORMAT_HLS_FMP4_SSAI]
 
 HEADERS = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36',
+    'User-Agent': 'okhttp/3.10.0',
 }
 
 class Kayo(object):
     def __init__(self):
-        self._session = requests.Session()
-        self._session.headers.update(HEADERS)
-        self._auth_header = {}
+        self._auth_headers = {}
         self._userdata = {}
         self._set_authentication()
 
@@ -33,12 +31,13 @@ class Kayo(object):
         if not access_token:
             return
 
-        self._auth_header = {'authorization': 'Bearer {}'.format(access_token)}
+        self._auth_headers = {'authorization': 'Bearer {}'.format(access_token)}
+        self._auth_headers.update(HEADERS)
         self.logged_in = True
 
     def _oauth_token(self, data):
         try:
-            token_data = self._session.post('https://auth.streamotion.com.au/oauth/token', json=data, headers={'User-Agent': 'okhttp/3.10.0'}).json()
+            token_data = requests.post('https://auth.streamotion.com.au/oauth/token', json=data, headers=HEADERS).json()
         except:
             raise Exception('Unable to fetch token. Check your location is in Australia.')
 
@@ -70,7 +69,7 @@ class Kayo(object):
             'fields': 'alternativeStreams,assetType,markers,metadata.isStreaming,metadata.drmContentIdAvc,metadata.sport',
         }
 
-        data = self._session.post('https://vmndplay.kayosports.com.au/api/v1/asset/{asset_id}/play'.format(asset_id=asset_id), params=params, json={}, headers=self._auth_header).json()
+        data = requests.post('https://vmndplay.kayosports.com.au/api/v1/asset/{asset_id}/play'.format(asset_id=asset_id), params=params, json={}, headers=self._auth_headers).json()
         if ('status' in data and data['status'] != 200) or 'errors' in data:
             raise Exception(data.get('detail') or data.get('errors', [{}])[0].get('detail'))
 
@@ -81,7 +80,7 @@ class Kayo(object):
         if not streams:
             raise Exception('No streams found')
 
-        data = self._session.get('https://cdnselectionserviceapi.kayosports.com.au/usecdn/mobile/LIVE', params={'sport': asset['metadata'].get('sport')}, headers=self._auth_header).json()
+        data = requests.get('https://cdnselectionserviceapi.kayosports.com.au/usecdn/mobile/LIVE', params={'sport': asset['metadata'].get('sport')}, headers=self._auth_headers).json()
         prefer_cdn = data['useCDN']
         prefer_format = 'ssai-{}'.format(data['mediaFormat']) if data['ssai'] else data['mediaFormat']
         if prefer_format.startswith('ssai-'):
@@ -106,8 +105,8 @@ class Kayo(object):
     def live_channels(self):
         self._refresh_token()
 
-        data = self._session.get('https://vccapi.kayosports.com.au/v2/content/types/carousel/keys/{}'.format(CHANNELS_PANEL)).json()
-        live_data = self._session.get(CHNO_URL).json()
+        data = requests.get('https://vccapi.kayosports.com.au/v2/content/types/carousel/keys/{}'.format(CHANNELS_PANEL), headers=HEADERS).json()
+        live_data = requests.get(CHNO_URL).json()
 
         channels = []
         for row in data[0]['contents']:
