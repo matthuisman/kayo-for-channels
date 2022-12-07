@@ -86,6 +86,10 @@ class Handler(BaseHTTPRequestHandler):
                 print(f"Skipping {channel_id} due to include / exclude")
                 continue
 
+            if row['asset']['drmProtected']:
+                print(f'Skipping DRM protected channel: {channel_id}')
+                continue
+
             chno = ''
             if start_chno is not None:
                 if start_chno > 0:
