@@ -17,7 +17,7 @@ AVAILABLE_CDNS = [CDN_AKAMAI, CDN_CLOUDFRONT, CDN_AUTO]
 SUPPORTED_FORMATS = [FORMAT_HLS_TS, FORMAT_HLS_TS_SSAI, FORMAT_HLS_FMP4, FORMAT_HLS_FMP4_SSAI]
 
 HEADERS = {
-    'User-Agent': 'okhttp/3.10.0',
+    'User-Agent': 'okhttp/4.9.3',
 }
 
 class Kayo(object):
